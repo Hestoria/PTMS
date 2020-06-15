@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="SwansDown">#D1EDE1</color>
+    <color name="Larchmere">#7BC5AE</color>
+    <color name="Obserbatory">#028C6A</color>
+    <color name="Kaitoke">#003E19</color>
+
 </resources>
