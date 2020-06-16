@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.stit.ptms.Adapter.Questions_Adapter;
 import com.example.stit.ptms.Object.Questions;
@@ -19,7 +21,6 @@ import com.example.stit.ptms.Object.Questions;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,8 +36,9 @@ public class MainActivity extends AppCompatActivity {
     private Questions_Adapter questionsAdapter;
     private LinearLayout layoutonboarding;
     private Button btn_next,btn_prev;
-
-
+    private List<Questions> questionsList = new ArrayList<>();
+    private ProgressDialog pd;
+    TextView question_num;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
         final ViewPager2 ViewPager = findViewById(R.id.ViewPager);
         ViewPager.setAdapter(questionsAdapter);
-
-        setupOnboardingicators();
-        setcurrentOnboardingicators(0);
 
         ViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -85,22 +84,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setQuestions(){//get json data and set up the question and ans
-        List<Questions> questionsList = new ArrayList<>();
-
-        questionsList.add(new Questions("11, 13, 17, 19, 23, 29, 31, 37, 41, ? ","34","a2","a3","a4"));
-        questionsList.add(new Questions("11, 10, ?, 100, 1001, 1000, 10001","34","a2","a3","a4"));
-        questionsList.add(new Questions("20, 19, 17, ?, 10, 5","34","a2","a3","a4"));
-        questionsList.add(new Questions("9, 12, 11, 14, 13, ?, 15","34","a2","a3","a4"));
-        questionsList.add(new Questions("4, 6, 12, 14, 28, 30, ?","34","a2","a3","a4"));
-        questionsList.add(new Questions("36, 34, 30, 28, 24, ?","34","a2","a3","a4"));
-        questionsList.add(new Questions("1, 4, 27, 16, ?, 36, 343","34","a2","a3","a4"));
-        questionsList.add(new Questions("6, 11, 21, 36, 56, ?","34","a2","a3","a4"));
-        questionsList.add(new Questions("2, 3, 5, 7, 11, ?, 17","34","a2","a3","a4"));
-        questionsList.add(new Questions("2, 7, 14, 23, ?, 47","34","a2","a3","a4"));
-
         String url = "https://ajtdbwbzhh.execute-api.us-east-1.amazonaws.com/default/201920ITP4501Assignment";
-        //new getjson().execute(url);
-
+        new getjson().execute(url);
         questionsAdapter = new Questions_Adapter(questionsList);
     }
 
@@ -110,6 +95,10 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             //show loading screan
+            pd = new ProgressDialog(MainActivity.this);
+            pd.setMessage("loading");
+            pd.setCancelable(false);
+            pd.show();
         }
 
         @Override
@@ -125,20 +114,27 @@ public class MainActivity extends AppCompatActivity {
                 reader = new BufferedReader(new InputStreamReader(stream));
                 StringBuffer buffer = new StringBuffer();
                 String line="";
-
                 while ((line = reader.readLine())!=null){
                     buffer.append(line);
-                    Log.i("data",line);
                 }
-
-
-
+                JSONObject jo = new JSONObject(buffer.toString());
+                JSONArray ja = jo.getJSONArray("questions");
+                for(int i = 0; i < ja.length(); i ++ ){
+                    questionsList.add(new Questions(
+                            ja.getJSONObject(i).getString("question"),
+                            ja.getJSONObject(i).getString("answer"),
+                            "2",
+                            "3",
+                            "4"));
+                }
                 return buffer.toString();
             } catch (MalformedURLException e) {
                 Log.e("error",""+e);
             } catch (IOException e) {
                 Log.e("error",""+e);
-            }finally {
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
                 if (connection != null)
                     connection.disconnect();
                 try {
@@ -155,7 +151,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Log.i("data",s);
+            //loading off
+            questionsAdapter.notifyDataSetChanged();
+            setupOnboardingicators();
+            setcurrentOnboardingicators(0);
+            if (pd.isShowing()){
+                pd.dismiss();
+            }
         }
     }
 
@@ -201,4 +203,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static class DBCon {
+
+    }
 }

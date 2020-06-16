@@ -33,7 +33,7 @@ public class Questions_Adapter extends RecyclerView.Adapter<Questions_Adapter.On
 
     @Override
     public void onBindViewHolder(@NonNull OnboardingViewHolder holder, int position) {
-        holder.setOnboardingData(data.get(position));
+        holder.setOnboardingData(data.get(position),position);
     }
 
     @Override
@@ -43,20 +43,22 @@ public class Questions_Adapter extends RecyclerView.Adapter<Questions_Adapter.On
 
     public class OnboardingViewHolder extends RecyclerView.ViewHolder {
         private RadioButton ans1,ans2,ans3,ans4;
-        private TextView question;
+        private TextView question,question_num;
 
         public OnboardingViewHolder(@NonNull View itemView) {
             super(itemView);
 
             question = itemView.findViewById(R.id.question);
+            question_num = itemView.findViewById(R.id.questions_num);
             ans1 = itemView.findViewById(R.id.ans1);
             ans2 = itemView.findViewById(R.id.ans2);
             ans3 = itemView.findViewById(R.id.ans3);
             ans4 = itemView.findViewById(R.id.ans4);
         }
 
-        void setOnboardingData(Questions data){
+        void setOnboardingData(Questions data,int position){
             question.setText(data.getQuestion());
+            question_num.setText("Question : "+(position+1));
             ans1.setText(data.getAns1());
             ans2.setText(data.getAns2());
             ans3.setText(data.getAns3());

@@ -5,42 +5,72 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/questions_num"
+        android:layout_above="@+id/question"
+        android:text="Questions : num"
+        android:textColor="@color/Kaitoke"
+        android:textStyle="bold"
+        android:textSize="25dp"
+        android:padding="5dp"
+        android:layout_marginStart="5dp"
+        android:gravity="left"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/question"
         android:text="@string/app_name"
-        android:layout_centerHorizontal="true"
         android:layout_above="@+id/questions_ans"
-        android:textSize="25dp"
+        android:textSize="22dp"
         android:textStyle="bold"
         android:textColor="@color/Kaitoke"
+        android:padding="5dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center"
         />
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/questions_ans">
+        android:layout_centerVertical="true"
+        android:id="@+id/questions_ans"
+        android:padding="15dp"
+        android:layout_marginStart="20dp">
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="18dp"
             android:text="Ans1"
-            android:id="@+id/ans1"/>
+            android:id="@+id/ans1"
+            android:textStyle="bold"
+            android:textColor="@color/Kaitoke"/>
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="18dp"
             android:text="Ans2"
-            android:id="@+id/ans2"/>
+            android:id="@+id/ans2"
+            android:textStyle="bold"
+            android:textColor="@color/Kaitoke"/>
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="18dp"
             android:text="Ans3"
-            android:id="@+id/ans3"/>
+            android:id="@+id/ans3"
+            android:textStyle="bold"
+            android:textColor="@color/Kaitoke"/>
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="18dp"
             android:text="Ans4"
-            android:id="@+id/ans4"/>
+            android:id="@+id/ans4"
+            android:textStyle="bold"
+            android:textColor="@color/Kaitoke"/>
     </RadioGroup>
 
 </RelativeLayout>
