@@ -1,5 +1,7 @@
 package com.example.stit.ptms;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
@@ -29,8 +31,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private Questions_Adapter questionsAdapter;
@@ -119,14 +129,34 @@ public class MainActivity extends AppCompatActivity {
                 }
                 JSONObject jo = new JSONObject(buffer.toString());
                 JSONArray ja = jo.getJSONArray("questions");
-                for(int i = 0; i < ja.length(); i ++ ){
-                    questionsList.add(new Questions(
-                            ja.getJSONObject(i).getString("question"),
-                            ja.getJSONObject(i).getString("answer"),
-                            "2",
-                            "3",
-                            "4"));
+
+                List<Integer> question_select = new ArrayList<Integer>();
+                for (int i = 0 ;i < ja.length();i++){
+                    question_select.add(i);
                 }
+                Collections.shuffle(question_select);
+
+                for (int i = 0 ; i < 5 ; i ++){
+                    List<Integer> ans = new ArrayList<>();
+                    
+
+                    questionsList.add(new Questions(
+                            ja.getJSONObject(question_select.get(i)).getString("question"),
+                            ja.getJSONObject(question_select.get(i)).getString("answer"),
+                            "2","3","4"
+                    ));
+                }
+
+
+
+//                for(int i = 0; i < ja.length(); i ++ ){
+//                    questionsList.add(new Questions(
+//                            ja.getJSONObject(i).getString("question"),
+//                            ja.getJSONObject(i).getString("answer"),
+//                            "2",
+//                            "3",
+//                            "4"));
+//                }
                 return buffer.toString();
             } catch (MalformedURLException e) {
                 Log.e("error",""+e);
