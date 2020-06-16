@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,6 +16,18 @@ import android.widget.LinearLayout;
 import com.example.stit.ptms.Adapter.Questions_Adapter;
 import com.example.stit.ptms.Object.Questions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,11 +97,67 @@ public class MainActivity extends AppCompatActivity {
         questionsList.add(new Questions("6, 11, 21, 36, 56, ?","34","a2","a3","a4"));
         questionsList.add(new Questions("2, 3, 5, 7, 11, ?, 17","34","a2","a3","a4"));
         questionsList.add(new Questions("2, 7, 14, 23, ?, 47","34","a2","a3","a4"));
-        //URL url = "https://ajtdbwbzhh.execute-api.us-east-1.amazonaws.com/default/201920ITP4501Assignment";
+
+        String url = "https://ajtdbwbzhh.execute-api.us-east-1.amazonaws.com/default/201920ITP4501Assignment";
+        //new getjson().execute(url);
 
         questionsAdapter = new Questions_Adapter(questionsList);
     }
 
+    private class getjson extends AsyncTask<String,String,String>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //show loading screan
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+            try {
+                URL url = new URL(strings[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+                StringBuffer buffer = new StringBuffer();
+                String line="";
+
+                while ((line = reader.readLine())!=null){
+                    buffer.append(line);
+                    Log.i("data",line);
+                }
+
+
+
+                return buffer.toString();
+            } catch (MalformedURLException e) {
+                Log.e("error",""+e);
+            } catch (IOException e) {
+                Log.e("error",""+e);
+            }finally {
+                if (connection != null)
+                    connection.disconnect();
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    Log.e("error",""+e);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.i("data",s);
+        }
+    }
 
     private void setupOnboardingicators(){
         ImageView[] indicators = new ImageView[questionsAdapter.getItemCount()];
@@ -130,4 +200,5 @@ public class MainActivity extends AppCompatActivity {
             btn_prev.setEnabled(true);
         }
     }
+
 }
