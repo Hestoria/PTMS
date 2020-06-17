@@ -1,10 +1,13 @@
 package com.example.stit.ptms.Adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +45,7 @@ public class Questions_Adapter extends RecyclerView.Adapter<Questions_Adapter.On
     }
 
     public class OnboardingViewHolder extends RecyclerView.ViewHolder {
+        private RadioGroup answers;
         private RadioButton ans1,ans2,ans3,ans4;
         private TextView question,question_num;
 
@@ -50,6 +54,7 @@ public class Questions_Adapter extends RecyclerView.Adapter<Questions_Adapter.On
 
             question = itemView.findViewById(R.id.question);
             question_num = itemView.findViewById(R.id.questions_num);
+            answers = itemView.findViewById(R.id.questions_ans);
             ans1 = itemView.findViewById(R.id.ans1);
             ans2 = itemView.findViewById(R.id.ans2);
             ans3 = itemView.findViewById(R.id.ans3);

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/SwansDown"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Are u ready to start?"
+        android:textColor="@color/Kaitoke"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_margin="5dp"
+        android:layout_gravity="center"
+        />
+    <Button
+        android:id="@+id/start_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="ready"
+        android:layout_gravity="center"
+        android:textColor="@drawable/button_text"
+        android:background="@drawable/button"/>
+</LinearLayout>

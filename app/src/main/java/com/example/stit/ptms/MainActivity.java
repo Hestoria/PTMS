@@ -1,21 +1,23 @@
 package com.example.stit.ptms;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.example.stit.ptms.Adapter.Questions_Adapter;
 import com.example.stit.ptms.Object.Questions;
@@ -31,16 +33,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Array;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private Questions_Adapter questionsAdapter;
@@ -48,15 +43,34 @@ public class MainActivity extends AppCompatActivity {
     private Button btn_next,btn_prev;
     private List<Questions> questionsList = new ArrayList<>();
     private ProgressDialog pd;
-    TextView question_num;
+    private List<Integer> selected_ans = new ArrayList<>();
+    private Chronometer timer;
+    private long countPauseSet;
+    private boolean counting;
+    private ImageView pause_resume_btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        timer = findViewById(R.id.timer);
         layoutonboarding = findViewById(R.id.onboarding);
         btn_next = findViewById(R.id.questions_next);
         btn_prev = findViewById(R.id.questions_prev);
+        pause_resume_btn = findViewById(R.id.back_home_btn);
+
+        pause_resume_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toast("click");
+            }
+        });
+
+        // default values
+        for (int i = 0 ;i < 5 ; i ++) {
+            selected_ans.add(-1);
+        }
 
         setQuestions();
 
@@ -65,9 +79,23 @@ public class MainActivity extends AppCompatActivity {
 
         ViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void onPageSelected(int position) {
+            public void onPageSelected(final int position) {
                 super.onPageSelected(position);
-                setcurrentOnboardingicators(position);
+                setcurrentOnboardingiactors(position);
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                RadioGroup answers = findViewById(R.id.questions_ans);
+
+                answers.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                        RadioButton ans = findViewById(id);
+                        setans(ViewPager.getCurrentItem(),Integer.parseInt(ans.getText().toString()));
+                    }
+                });
             }
         });
 
@@ -77,7 +105,32 @@ public class MainActivity extends AppCompatActivity {
                 if(ViewPager.getCurrentItem() + 1 < questionsAdapter.getItemCount()){
                     ViewPager.setCurrentItem(ViewPager.getCurrentItem() + 1);
                 } else {
-                    //check selection and confirm submitting and ans and return result
+                    //check selection , confirm submitting the ans and return result
+                    int correct_count = 0;
+                    if (!selected_ans.contains(-1)){
+                        for (int i = 0 ; i< 5 ; i++){
+                            if(Integer.parseInt(questionsList.get(i).getCorrect_ans()) == selected_ans.get(i)){
+                                //check answer correct
+                                correct_count++;
+                                Log.d("answer","Q "+(i+1)+" : correct \nuser ans "+selected_ans.get(i).toString()+"" +
+                                        "\ncorrect ans"+questionsList.get(i).getCorrect_ans());
+                            }
+                            else{
+                                //check answer wrong
+                                Log.d("answer","Q "+(i+1)+" : wrong \nuser ans "+selected_ans.get(i).toString()+"" +
+                                        "\ncorrect ans "+questionsList.get(i).getCorrect_ans());
+                            }
+                            if (counting){
+                                timer.stop();
+                                countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
+                                counting = false;
+                            }
+                            Log.d("time",SystemClock.elapsedRealtime()+"timeer \n "+countPauseSet);
+                            toast((countPauseSet/1000)+"");
+                        }
+                    }else {
+                        toast("finish the answer");
+                    }
                 }
             }
         });
@@ -93,12 +146,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void setQuestions(){//get json data and set up the question and ans
+
+    //for testing
+    public void toast(String msg){
+        Log.d("testing",msg);
+    }
+
+    //input ans into array
+    public void setans(int page,int ans){
+        selected_ans.set(page,ans);
+    }
+
+    //get json data and set up the question and ans
+    public void setQuestions(){
         String url = "https://ajtdbwbzhh.execute-api.us-east-1.amazonaws.com/default/201920ITP4501Assignment";
         new getjson().execute(url);
         questionsAdapter = new Questions_Adapter(questionsList);
     }
 
+    //get question
     private class getjson extends AsyncTask<String,String,String>{
 
         @Override
@@ -130,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jo = new JSONObject(buffer.toString());
                 JSONArray ja = jo.getJSONArray("questions");
 
+                //selection of 10 questions
                 List<Integer> question_select = new ArrayList<Integer>();
                 for (int i = 0 ;i < ja.length();i++){
                     question_select.add(i);
@@ -137,33 +204,49 @@ public class MainActivity extends AppCompatActivity {
                 Collections.shuffle(question_select);
 
                 for (int i = 0 ; i < 5 ; i ++){
-                    List<Integer> ans = new ArrayList<>();
-                    
+                    //get the real ans
+                    int ans_temp = Integer.parseInt(
+                            ja.getJSONObject(question_select.get(i))
+                                    .getString("answer"));
+                    //log out the selected question and the correct answer
+                    Log.d("select q","question number : "+question_select.get(i)+
+                            "\n ans : "+ ja.getJSONObject(question_select.get(i))
+                            .getString("answer"));
 
+                    //generate answer
+                    List<Integer> ans = new ArrayList<>() ,temp = new ArrayList<>();
+                    for (int k = (ans_temp - 10);k < (ans_temp + 10);k++){
+                        if (k == ans_temp)
+                            continue;
+                        else
+                            temp.add(k);
+                    }
+                    Collections.shuffle(temp);
+                    //add correct answer ans generated answer to list
+                    ans.add(ans_temp);
+                    for (int k = 0; k < 3 ; k++){
+                        ans.add(temp.get(k));
+                    }
+                    Collections.shuffle(ans);
+
+                    // add question and answers to viewpager
                     questionsList.add(new Questions(
                             ja.getJSONObject(question_select.get(i)).getString("question"),
-                            ja.getJSONObject(question_select.get(i)).getString("answer"),
-                            "2","3","4"
+                            ans.get(0).toString(),
+                            ans.get(1).toString(),
+                            ans.get(2).toString(),
+                            ans.get(3).toString(),
+                            ans_temp+""
                     ));
                 }
-
-
-
-//                for(int i = 0; i < ja.length(); i ++ ){
-//                    questionsList.add(new Questions(
-//                            ja.getJSONObject(i).getString("question"),
-//                            ja.getJSONObject(i).getString("answer"),
-//                            "2",
-//                            "3",
-//                            "4"));
-//                }
+                //for log check
                 return buffer.toString();
             } catch (MalformedURLException e) {
                 Log.e("error",""+e);
             } catch (IOException e) {
                 Log.e("error",""+e);
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("error",""+e);
             } finally {
                 if (connection != null)
                     connection.disconnect();
@@ -181,17 +264,46 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            //loading off
+            //update view
             questionsAdapter.notifyDataSetChanged();
-            setupOnboardingicators();
-            setcurrentOnboardingicators(0);
+            //update on boarding view
+            setupOnboardingactors();
+            setcurrentOnboardingiactors(0);
+            //loading off
             if (pd.isShowing()){
                 pd.dismiss();
+                //create alert dialog
+                showDialog();
             }
         }
     }
 
-    private void setupOnboardingicators(){
+    //alert dialog for user ready to answer and start to  count up the time
+    public void showDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_start, null);
+        Button start_btn = view.findViewById(R.id.start_btn);
+        builder.setView(view);
+        final AlertDialog start_dialog = builder.create();
+        start_dialog.setCancelable(false);
+        start_dialog.show();
+
+        start_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                start_dialog.dismiss();
+                if (!counting){
+                    timer.setBase(SystemClock.elapsedRealtime());
+                    timer.start();
+                    counting = true;
+                }
+            }
+        });
+    }
+
+    //set up on boarding actors
+    private void setupOnboardingactors(){
         ImageView[] indicators = new ImageView[questionsAdapter.getItemCount()];
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -207,7 +319,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setcurrentOnboardingicators(int index){
+    //update on boarding actors
+    private void setcurrentOnboardingiactors(int index){
         int childcount = layoutonboarding.getChildCount();
         for (int i = 0; i < childcount; i++){
             ImageView imageView = (ImageView)layoutonboarding.getChildAt(i);
@@ -226,14 +339,12 @@ public class MainActivity extends AppCompatActivity {
         } else {
             btn_next.setText("Next");
         }
-        if (index == 0 ){
+        if (index == 0){
             btn_prev.setEnabled(false);
+            btn_prev.setText("");
         } else {
             btn_prev.setEnabled(true);
+            btn_prev.setText("Prev");
         }
-    }
-
-    public static class DBCon {
-
     }
 }

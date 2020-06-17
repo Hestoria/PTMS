@@ -6,6 +6,31 @@
     tools:context=".MainActivity"
     android:background="@color/SwansDown">
 
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_back"
+        android:layout_margin="20dp"
+        android:id="@+id/back_home_btn" />
+
+    <ImageView
+        android:id="@+id/pause_resume_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_pause"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@+id/back_home_btn"/>
+
+    <Chronometer
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:textSize="25dp"
+        android:gravity="center"
+        android:layout_margin="20dp"
+        android:id="@+id/timer"
+        android:textColor="@color/Kaitoke"/>
+
     <Button
         android:background="@drawable/button"
         android:textColor="@color/Kaitoke"
@@ -27,8 +52,7 @@
         android:layout_margin="16dp"
         android:textSize="15sp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:text="Prev"/>
+        android:layout_alignParentLeft="true"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/ViewPager"
