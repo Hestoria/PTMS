@@ -2,6 +2,7 @@ package com.example.stit.ptms;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.AlertDialog;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private Chronometer timer;
     private long countPauseSet;
     private boolean counting;
-    private ImageView pause_resume_btn;
+    private ImageView pause_resume_btn,back_home_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +59,8 @@ public class MainActivity extends AppCompatActivity {
         layoutonboarding = findViewById(R.id.onboarding);
         btn_next = findViewById(R.id.questions_next);
         btn_prev = findViewById(R.id.questions_prev);
-        pause_resume_btn = findViewById(R.id.back_home_btn);
-
-        pause_resume_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toast("click");
-            }
-        });
+        pause_resume_btn = findViewById(R.id.pause_resume_btn);
+        back_home_btn = findViewById(R.id.back_home_btn);
 
         // default values
         for (int i = 0 ;i < 5 ; i ++) {
@@ -125,9 +120,8 @@ public class MainActivity extends AppCompatActivity {
                                 countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
                                 counting = false;
                             }
-                            Log.d("time",SystemClock.elapsedRealtime()+"timeer \n "+countPauseSet);
-                            toast((countPauseSet/1000)+"");
                         }
+                        toast(Math.floor(countPauseSet/1000)+": time");
                     }else {
                         toast("finish the answer");
                     }
@@ -144,6 +138,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        //back to home page button
+        back_home_btn.bringToFront();
+        back_home_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //back to home
+                recreate();
+            }
+        });
+
+        //set up pause and resume button
+        pause_resume_btn.setTag(R.drawable.ic_pause);
+        pause_resume_btn.bringToFront();
+        pause_resume_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if ((int)pause_resume_btn.getTag() == R.drawable.ic_pause){
+                    if (counting){
+                        timer.stop();
+                        countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
+                        counting = false;
+                        pause_resume_btn.setImageResource(R.drawable.ic_play);
+                        pause_resume_btn.setTag(R.drawable.ic_play);
+                        ViewPager.setVisibility(View.GONE);
+                        //pause screen show
+                    }
+                }else if ((int)pause_resume_btn.getTag() == R.drawable.ic_play){
+                    if (!counting){
+                        timer.setBase(SystemClock.elapsedRealtime() - countPauseSet);
+                        timer.start();
+                        counting = true;
+                        pause_resume_btn.setImageResource(R.drawable.ic_pause);
+                        pause_resume_btn.setTag(R.drawable.ic_pause);
+                        ViewPager.setVisibility(View.VISIBLE);
+                        //pause screen dismiss
+                    }
+                }
+            }
+        });
     }
 
 
@@ -228,14 +262,13 @@ public class MainActivity extends AppCompatActivity {
                         ans.add(temp.get(k));
                     }
                     Collections.shuffle(ans);
-
                     // add question and answers to viewpager
                     questionsList.add(new Questions(
                             ja.getJSONObject(question_select.get(i)).getString("question"),
-                            ans.get(0).toString(),
-                            ans.get(1).toString(),
-                            ans.get(2).toString(),
-                            ans.get(3).toString(),
+                            "A. "+ans.get(0),
+                            "B. "+ans.get(1),
+                            "C. "+ans.get(2),
+                            "D. "+ans.get(3),
                             ans_temp+""
                     ));
                 }
@@ -288,7 +321,6 @@ public class MainActivity extends AppCompatActivity {
         final AlertDialog start_dialog = builder.create();
         start_dialog.setCancelable(false);
         start_dialog.show();
-
         start_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
