@@ -20,21 +20,9 @@ public class HomeActivity extends AppCompatActivity {
             setContentView(R.layout.welcome_page);
             prefs.edit().putBoolean("first",false).commit();
             //welcome page set up
-
         }else {
             setContentView(R.layout.activity_home);
             //set up home page
-            dataBase = new DataBase(this);
-            SQLiteDatabase db = dataBase.getWritableDatabase();
-            ContentValues values= new ContentValues();
-            values.put("testNo",1);
-            values.put("questions","quesitons");
-            values.put("yourAnswer","50000");
-            values.put("isCorrect",1);
-            db.insert("QuestionsLog",null,values);
-
-
-            dataBase.getQuestions();
             startActivity(new Intent(this,MainActivity.class));
         }
 

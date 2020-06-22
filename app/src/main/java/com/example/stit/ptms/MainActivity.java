@@ -2,6 +2,7 @@ package com.example.stit.ptms;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.AlertDialog;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.example.stit.ptms.Adapter.Questions_Adapter;
 import com.example.stit.ptms.Object.Questions;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean counting;
     private ImageView pause_resume_btn,back_home_btn;
     private DataBase dataBase = new DataBase(this);
-    private ImageView pause_resume_btn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,27 +67,19 @@ public class MainActivity extends AppCompatActivity {
         layoutonboarding = findViewById(R.id.onboarding);
         btn_next = findViewById(R.id.questions_next);
         btn_prev = findViewById(R.id.questions_prev);
-        pause_resume_btn = findViewById(R.id.back_home_btn);
-
-        pause_resume_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toast("click");
-            }
-        });
+        pause_resume_btn = findViewById(R.id.pause_resume_btn);
+        back_home_btn = findViewById(R.id.back_home_btn);
 
         // default values
         for (int i = 0 ;i < 5 ; i ++) {
             selected_ans.add(-1);
         }
-
-
-
+        final String Date =  new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        final String Time =  new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         setQuestions();
 
         final ViewPager2 ViewPager = findViewById(R.id.ViewPager);
         ViewPager.setAdapter(questionsAdapter);
-
         ViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(final int position) {
@@ -114,33 +108,57 @@ public class MainActivity extends AppCompatActivity {
                 if(ViewPager.getCurrentItem() + 1 < questionsAdapter.getItemCount()){
                     ViewPager.setCurrentItem(ViewPager.getCurrentItem() + 1);
                 } else {
-
-                    Log.d("data",new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
-                    Log.d("data",new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()));
-
                     //check selection , confirm submitting the ans and return result
                     int correct_count = 0;
                     if (!selected_ans.contains(-1)){
+                        SQLiteDatabase db = dataBase.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        // stop counting
+                        if (counting){
+                            timer.stop();
+                            countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
+                            counting = false;
+                        }
+
+                        // insert new TestsLog
+                        values.put("testDate",Date);
+                        values.put("testTime",Time);
+                        values.put("duration",(int)Math.floor(countPauseSet/1000));
+                        values.put("correctCount",-1);
+                        db.insert("TestsLog",null,values);
+                        values.clear();
+
+                        int testsID = dataBase.GetTestsID();
                         for (int i = 0 ; i< 5 ; i++){
                             if(Integer.parseInt(questionsList.get(i).getCorrect_ans()) == selected_ans.get(i)){
                                 //check answer correct
                                 correct_count++;
                                 Log.d("answer","Q "+(i+1)+" : correct \nuser ans "+selected_ans.get(i).toString()+"" +
                                         "\ncorrect ans"+questionsList.get(i).getCorrect_ans());
+
+                                values.put("testNo",testsID);
+                                values.put("questions",questionsList.get(i).getQuestion());
+                                values.put("yourAnswer",selected_ans.get(i));
+                                values.put("isCorrect",1);
+                                db.insert("QuestionsLog",null,values);
+                                values.clear();
                             }
                             else{
                                 //check answer wrong
                                 Log.d("answer","Q "+(i+1)+" : wrong \nuser ans "+selected_ans.get(i).toString()+"" +
                                         "\ncorrect ans "+questionsList.get(i).getCorrect_ans());
+
+                                values.put("testNo",testsID);
+                                values.put("questions",questionsList.get(i).getQuestion());
+                                values.put("yourAnswer",selected_ans.get(i));
+                                values.put("isCorrect",0);
+                                db.insert("QuestionsLog",null,values);
+                                values.clear();
                             }
-                            if (counting){
-                                timer.stop();
-                                countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
-                                counting = false;
-                            }
-                            Log.d("time",SystemClock.elapsedRealtime()+"timeer \n "+countPauseSet);
-                            toast((countPauseSet/1000)+"");
                         }
+                        // update correct count from TestsLog
+                        dataBase.UpdateCorrectCount(testsID,correct_count);
+                        recreate();
                     }else {
                         toast("finish the answer");
                     }
@@ -157,12 +175,52 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        //back to home page button
+        back_home_btn.bringToFront();
+        back_home_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //back to home
+                recreate();
+            }
+        });
+
+        //set up pause and resume button
+        pause_resume_btn.setTag(R.drawable.ic_pause);
+        pause_resume_btn.bringToFront();
+        pause_resume_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if ((int)pause_resume_btn.getTag() == R.drawable.ic_pause){
+                    if (counting){
+                        timer.stop();
+                        countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
+                        counting = false;
+                        pause_resume_btn.setImageResource(R.drawable.ic_play);
+                        pause_resume_btn.setTag(R.drawable.ic_play);
+                        ViewPager.setVisibility(View.GONE);
+                        //pause screen show
+                    }
+                }else if ((int)pause_resume_btn.getTag() == R.drawable.ic_play){
+                    if (!counting){
+                        timer.setBase(SystemClock.elapsedRealtime() - countPauseSet);
+                        timer.start();
+                        counting = true;
+                        pause_resume_btn.setImageResource(R.drawable.ic_pause);
+                        pause_resume_btn.setTag(R.drawable.ic_pause);
+                        ViewPager.setVisibility(View.VISIBLE);
+                        //pause screen dismiss
+                    }
+                }
+            }
+        });
     }
 
 
     //for testing
     public void toast(String msg){
-        Log.d("testing",msg);
+        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
     }
 
     //input ans into array
@@ -241,14 +299,13 @@ public class MainActivity extends AppCompatActivity {
                         ans.add(temp.get(k));
                     }
                     Collections.shuffle(ans);
-
                     // add question and answers to viewpager
                     questionsList.add(new Questions(
                             ja.getJSONObject(question_select.get(i)).getString("question"),
-                            ans.get(0).toString(),
-                            ans.get(1).toString(),
-                            ans.get(2).toString(),
-                            ans.get(3).toString(),
+                            ""+ans.get(0),
+                            ""+ans.get(1),
+                            ""+ans.get(2),
+                            ""+ans.get(3),
                             ans_temp+""
                     ));
                 }
@@ -301,7 +358,6 @@ public class MainActivity extends AppCompatActivity {
         final AlertDialog start_dialog = builder.create();
         start_dialog.setCancelable(false);
         start_dialog.show();
-
         start_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

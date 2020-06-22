@@ -55,7 +55,7 @@ public class DataBase extends SQLiteOpenHelper {
         }
     }
 
-    public void getTests(){
+    public int getTests(){
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM TestsLog";
         try (Cursor cursor = db.rawQuery(sql, null)) {
@@ -65,5 +65,26 @@ public class DataBase extends SQLiteOpenHelper {
                 }while (cursor.moveToNext());
             }
         }
+        return 0;
     }
+
+
+    public int GetTestsID(){
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "select testNo from TestsLog where testNo = (select max(testNo) from TestsLog)";
+        Cursor cursor    = db.rawQuery(sql,null);
+        if (cursor!=null && cursor.moveToFirst()){
+            return cursor.getInt(0);
+        }
+        return -1;
+    }
+
+    public void UpdateCorrectCount(int ID,int Count){
+        SQLiteDatabase db = getWritableDatabase();
+        String sql = "UPDATE TestsLog SET correctCount = "+Count
+                +" WHERE testNo = "+ID;
+        Log.d("SQL",sql);
+        db.execSQL(sql);
+    }
+
 }
