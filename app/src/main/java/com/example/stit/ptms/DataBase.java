@@ -8,6 +8,11 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.stit.ptms.Object.Result;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DataBase extends SQLiteOpenHelper {
     private final static int _DBVersion = 1;
     private final static String _DBName = "PTMS.db";
@@ -43,31 +48,26 @@ public class DataBase extends SQLiteOpenHelper {
 
     }
 
-    public void getQuestions(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM QuestionsLog";
-        try (Cursor cursor = db.rawQuery(sql, null)) {
-            if (cursor.moveToFirst()){
-                do {
-                    Log.d("data",cursor.getString(cursor.getColumnIndex("QuestionNo")));
-                }while (cursor.moveToNext());
-            }
-        }
-    }
-
-    public int getTests(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM TestsLog";
-        try (Cursor cursor = db.rawQuery(sql, null)) {
-            if (cursor.moveToFirst()){
-                do {
-                    Log.d("data",cursor.getString(cursor.getColumnIndex("testNo")));
-                }while (cursor.moveToNext());
-            }
-        }
-        return 0;
-    }
-
+    public List<Result> getTestsLog(){
+      List<Result> data = new ArrayList<>();
+      SQLiteDatabase db = this.getReadableDatabase();
+      String sql = "SELECT * FROM QuestionsLog";
+        try(Cursor cursor = db.rawQuery(sql,null)){
+          if (cursor.moveToFirst()){
+              do {
+                  Result temp = new Result();
+                  temp.setAns(cursor.getString(cursor.getColumnIndex("yourAnswer")));
+                  temp.setQuestion(cursor.getString(cursor.getColumnIndex("questions")));
+                  if (cursor.getInt(cursor.getColumnIndex("isCorrect"))==1)
+                      temp.setCorrect(true);
+                  else
+                      temp.setCorrect(false);
+                  data.add(temp);
+              }while (cursor.moveToNext());
+          }
+      }
+      return data;
+    };
 
     public int GetTestsID(){
         SQLiteDatabase db = getReadableDatabase();

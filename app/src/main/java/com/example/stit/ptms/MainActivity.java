@@ -152,7 +152,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                         // update correct count from TestsLog
                         dataBase.UpdateCorrectCount(testsID,correct_count);
-                        recreate();
+                        // back to home
+                        backToHome();
                     }else {
                         toast("finish the answer");
                     }
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //back to home
-                startActivity(back);
+                backToHome();
             }
         });
 
@@ -259,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
                 while ((line = reader.readLine())!=null){
                     buffer.append(line);
                 }
+
                 JSONObject jo = new JSONObject(buffer.toString());
                 JSONArray ja = jo.getJSONArray("questions");
 
@@ -410,6 +412,10 @@ public class MainActivity extends AppCompatActivity {
             btn_prev.setEnabled(true);
             btn_prev.setText("Prev");
         }
+    }
+
+    public void backToHome(){
+        startActivity(new Intent(this,HomeActivity.class));
     }
 
 }

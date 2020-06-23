@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -146,5 +147,9 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             welcome_btn.setText("Next");
         }
+    }
+
+    public void goMain(View view){
+        startActivity(new Intent(this,MainActivity.class));
     }
 }
