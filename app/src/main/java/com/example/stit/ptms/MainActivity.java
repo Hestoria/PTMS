@@ -2,12 +2,13 @@ package com.example.stit.ptms;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -130,31 +131,24 @@ public class MainActivity extends AppCompatActivity {
 
                         int testsID = dataBase.GetTestsID();
                         for (int i = 0 ; i< 5 ; i++){
+                            values.put("testNo",testsID);
+                            values.put("questions",questionsList.get(i).getQuestion());
+                            values.put("yourAnswer",selected_ans.get(i));
                             if(Integer.parseInt(questionsList.get(i).getCorrect_ans()) == selected_ans.get(i)){
                                 //check answer correct
                                 correct_count++;
                                 Log.d("answer","Q "+(i+1)+" : correct \nuser ans "+selected_ans.get(i).toString()+"" +
                                         "\ncorrect ans"+questionsList.get(i).getCorrect_ans());
-
-                                values.put("testNo",testsID);
-                                values.put("questions",questionsList.get(i).getQuestion());
-                                values.put("yourAnswer",selected_ans.get(i));
                                 values.put("isCorrect",1);
-                                db.insert("QuestionsLog",null,values);
-                                values.clear();
                             }
                             else{
                                 //check answer wrong
                                 Log.d("answer","Q "+(i+1)+" : wrong \nuser ans "+selected_ans.get(i).toString()+"" +
                                         "\ncorrect ans "+questionsList.get(i).getCorrect_ans());
-
-                                values.put("testNo",testsID);
-                                values.put("questions",questionsList.get(i).getQuestion());
-                                values.put("yourAnswer",selected_ans.get(i));
                                 values.put("isCorrect",0);
-                                db.insert("QuestionsLog",null,values);
-                                values.clear();
                             }
+                            db.insert("QuestionsLog",null,values);
+                            values.clear();
                         }
                         // update correct count from TestsLog
                         dataBase.UpdateCorrectCount(testsID,correct_count);
@@ -177,12 +171,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         //back to home page button
+        final Intent back = new Intent(this,HomeActivity.class);
         back_home_btn.bringToFront();
         back_home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //back to home
-                recreate();
+                startActivity(back);
             }
         });
 

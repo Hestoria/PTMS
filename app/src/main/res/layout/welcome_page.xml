@@ -3,9 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".HomeActivity">
+    tools:context=".HomeActivity"
+    android:background="@color/SwansDown">
+
     <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/welcome_page"/>
+        android:id="@+id/welcome_ViewPager"
+        />
+
+    <LinearLayout
+        android:id="@+id/welcome_onboarding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:orientation="horizontal"
+        android:padding="15dp"
+        android:layout_margin="16dp"
+        android:layout_alignParentBottom="true"
+        />
+
+    <Button
+        android:background="@drawable/button"
+        android:textColor="@color/Kaitoke"
+        android:id="@+id/welcome_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="15sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
+
 </RelativeLayout>
