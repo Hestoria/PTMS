@@ -35,13 +35,16 @@ dependencies {
     //material
     api 'com.google.android.material:material:1.1.0-alpha06'
 
-    //loading ui
-    implementation 'com.wang.avi:library:2.1.3'
-
     //viewpager2
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
     //recyclerview
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0-beta01"
+
+    //chart
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
+
+    //loading
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 }

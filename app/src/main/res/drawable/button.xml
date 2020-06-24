@@ -16,7 +16,7 @@
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
             <corners android:radius="5dp"/>
-            <solid android:color="@color/Larchmere"/>
+            <solid android:color="@color/disable"/>
             <stroke android:color="@color/Obserbatory" android:width="1dip"/>
         </shape>
     </item>

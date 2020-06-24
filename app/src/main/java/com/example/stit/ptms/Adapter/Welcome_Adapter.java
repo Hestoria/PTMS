@@ -15,7 +15,6 @@ import com.example.stit.ptms.R;
 import java.util.List;
 
 public class Welcome_Adapter extends RecyclerView.Adapter<Welcome_Adapter.OnboardingViewHolder> {
-
     private List<Welcome> data;
 
     public Welcome_Adapter(List<Welcome> data) {

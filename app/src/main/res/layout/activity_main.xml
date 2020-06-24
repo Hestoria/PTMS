@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity"
     android:background="@color/SwansDown">
 
@@ -58,6 +59,38 @@
         android:id="@+id/ViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/pause_screen"
+        android:visibility="gone">
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toLeftOf="@id/pause_txt"
+            style="@style/SpinKitView.DoubleBounce"
+            app:SpinKit_Color="@color/Obserbatory"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/title"
+            android:id="@+id/pause_txt"
+            android:text="Game Paused"
+            android:layout_centerVertical="true"/>
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@id/pause_txt"
+            style="@style/SpinKitView.DoubleBounce"
+            app:SpinKit_Color="@color/Obserbatory"
+            />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/onboarding"

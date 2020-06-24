@@ -1,4 +1,15 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
     </style>
+    <style name="title">
+        <item name="android:textColor">@color/Kaitoke</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">30dp</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+    <style name="comment">
+        <item name="android:textSize">10dp</item>
+        <item name="android:textColor">@color/comment</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
 </resources>

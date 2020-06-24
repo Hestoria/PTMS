@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="@color/item_bg"
+    android:layout_margin="5dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TestsLog_Date"
+        android:text="dd-mm-yyyy"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:textColor="@color/Kaitoke"
+        android:layout_margin="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TestsLog_Time"
+        android:text="hh:mm"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:textColor="@color/Kaitoke"
+        android:layout_margin="10dp"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TestsLog_Corrects"
+        android:text="C/5"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:textColor="@color/Kaitoke"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TestsLog_duration"
+        android:text="mm:ss"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:textColor="@color/Kaitoke"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="10dp"/>
+
+</RelativeLayout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/SwansDown">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/title"
+        android:text="LOG"
+        android:id="@+id/title"
+        android:layout_margin="20dp"/>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_back"
+        android:layout_margin="20dp"
+        android:id="@+id/back_btn" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_below="@+id/title"
+        android:id="@+id/quest_info"
+        android:background="@color/SwansDown">
+        <com.anychart.AnyChartView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/chart"
+            />
+        <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        />
+    </RelativeLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="duration per question: 123"
+        android:textSize="16dp"
+        android:textColor="@color/Kaitoke"
+        android:layout_below="@id/quest_info"
+        android:id="@+id/duration_per_question"
+        android:layout_margin="5dp"
+        />
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/QuestionLog_container"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/duration_per_question"
+        />
+</RelativeLayout>

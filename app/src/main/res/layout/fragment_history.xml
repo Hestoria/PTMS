@@ -3,9 +3,41 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/SwansDown">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_history"
+        android:id="@+id/Title"
+        android:layout_marginTop="20dp"
+        style="@style/title"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/Title"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="2dp"
+        android:id="@+id/graph"/>
+
+    <TextView
+        android:id="@+id/click_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/click"
+        android:layout_below="@+id/graph"
+        style="@style/comment"/>
+
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="2dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/result_container"
+        android:id="@+id/TestsLog_container"
+        android:layout_below="@id/click_msg"
         />
 </RelativeLayout>

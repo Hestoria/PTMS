@@ -1,25 +1,23 @@
 package com.example.stit.ptms.Adapter;
 
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.stit.ptms.Object.Result;
+import com.example.stit.ptms.Object.QuestionsLog;
 import com.example.stit.ptms.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Result_Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class QuestionsLog_Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
-    private List<Result> data = new ArrayList<>();
+    private List<QuestionsLog> data = new ArrayList<>();
     private static int TYPE_Correct = 1,TYPE_Wrong = 2;
     private OnItemClickListener listener;
 
@@ -32,7 +30,7 @@ public class Result_Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-    public Result_Adapter(Context context, List<Result> data) {
+    public QuestionsLog_Adapter(Context context, List<QuestionsLog> data) {
         this.data = data;
         this.context = context;
     }
@@ -43,10 +41,10 @@ public class Result_Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v;
         if (viewType == TYPE_Correct){
-            v = LayoutInflater.from(context).inflate(R.layout.result_item_correct,parent,false);
+            v = LayoutInflater.from(context).inflate(R.layout.questionslog_correct_item,parent,false);
             return new CorrectViewHolder(v);
         }else {
-            v = LayoutInflater.from(context).inflate(R.layout.result_item_wrong,parent,false);
+            v = LayoutInflater.from(context).inflate(R.layout.questionslog_wrong_item,parent,false);
             return new WrongViewHolder(v);
         }
     }
@@ -73,41 +71,31 @@ public class Result_Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public class CorrectViewHolder extends RecyclerView.ViewHolder {
-        private TextView q,a;
+        private TextView ans,quest;
         public CorrectViewHolder(@NonNull View itemView) {
             super(itemView);
-            q = itemView.findViewById(R.id.result_question);
-            a = itemView.findViewById(R.id.result_ans);
+
+            quest = itemView.findViewById(R.id.quest_log_questions);
+            ans = itemView.findViewById(R.id.quest_log_ans);
         }
 
-        public void setCorrectItem(Result data,final  OnItemClickListener listener) {
-            q.setText(data.getQuestion());
-            a.setText(data.getAns());
+        public void setCorrectItem(QuestionsLog data,final  OnItemClickListener listener) {
+            quest.setText("Question: "+data.getQuestion());
+            ans.setText("Your Answer: "+data.getAnswer());
         }
     }
 
     public class WrongViewHolder extends RecyclerView.ViewHolder{
-        private TextView q,a;
+        private TextView ans,quest;
         public WrongViewHolder(View itemView){
             super(itemView);
-            q = itemView.findViewById(R.id.result_question);
-            a = itemView.findViewById(R.id.result_ans);
+            quest = itemView.findViewById(R.id.quest_log_questions);
+            ans = itemView.findViewById(R.id.quest_log_ans);
         }
 
-        public void setWrongItem(Result data,final OnItemClickListener listener){
-            q.setText(data.getQuestion());
-            a.setText(data.getAns());
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener!=null){
-                        int postition = getAdapterPosition();
-                        if (postition != RecyclerView.NO_POSITION){
-                            listener.OnItemClick(postition);
-                        }
-                    }
-                }
-            });
+        public void setWrongItem(QuestionsLog data,final OnItemClickListener listener){
+            quest.setText("Question: "+data.getQuestion());
+            ans.setText("Your Answer: "+data.getAnswer());
         }
     }
 }

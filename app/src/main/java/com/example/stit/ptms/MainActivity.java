@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.stit.ptms.Adapter.Questions_Adapter;
@@ -50,15 +51,15 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout layoutonboarding;
     private Button btn_next,btn_prev;
     private List<Questions> questionsList = new ArrayList<>();
-    private ProgressDialog pd;
     private List<Integer> selected_ans = new ArrayList<>();
     private Chronometer timer;
     private long countPauseSet;
     private boolean counting;
     private ImageView pause_resume_btn,back_home_btn;
     private DataBase dataBase = new DataBase(this);
-
-
+    private LoadingDiaLog loadingDiaLog;
+    private ViewPager2 ViewPager;
+    private RelativeLayout pauseScreen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         btn_prev = findViewById(R.id.questions_prev);
         pause_resume_btn = findViewById(R.id.pause_resume_btn);
         back_home_btn = findViewById(R.id.back_home_btn);
+        pauseScreen = findViewById(R.id.pause_screen);
 
         // default values
         for (int i = 0 ;i < 5 ; i ++) {
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         final String Time =  new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         setQuestions();
 
-        final ViewPager2 ViewPager = findViewById(R.id.ViewPager);
+        ViewPager = findViewById(R.id.ViewPager);
         ViewPager.setAdapter(questionsAdapter);
         ViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -110,52 +112,11 @@ public class MainActivity extends AppCompatActivity {
                     ViewPager.setCurrentItem(ViewPager.getCurrentItem() + 1);
                 } else {
                     //check selection , confirm submitting the ans and return result
-                    int correct_count = 0;
                     if (!selected_ans.contains(-1)){
-                        SQLiteDatabase db = dataBase.getWritableDatabase();
-                        ContentValues values = new ContentValues();
-                        // stop counting
-                        if (counting){
-                            timer.stop();
-                            countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
-                            counting = false;
-                        }
-
-                        // insert new TestsLog
-                        values.put("testDate",Date);
-                        values.put("testTime",Time);
-                        values.put("duration",(int)Math.floor(countPauseSet/1000));
-                        values.put("correctCount",-1);
-                        db.insert("TestsLog",null,values);
-                        values.clear();
-
-                        int testsID = dataBase.GetTestsID();
-                        for (int i = 0 ; i< 5 ; i++){
-                            values.put("testNo",testsID);
-                            values.put("questions",questionsList.get(i).getQuestion());
-                            values.put("yourAnswer",selected_ans.get(i));
-                            if(Integer.parseInt(questionsList.get(i).getCorrect_ans()) == selected_ans.get(i)){
-                                //check answer correct
-                                correct_count++;
-                                Log.d("answer","Q "+(i+1)+" : correct \nuser ans "+selected_ans.get(i).toString()+"" +
-                                        "\ncorrect ans"+questionsList.get(i).getCorrect_ans());
-                                values.put("isCorrect",1);
-                            }
-                            else{
-                                //check answer wrong
-                                Log.d("answer","Q "+(i+1)+" : wrong \nuser ans "+selected_ans.get(i).toString()+"" +
-                                        "\ncorrect ans "+questionsList.get(i).getCorrect_ans());
-                                values.put("isCorrect",0);
-                            }
-                            db.insert("QuestionsLog",null,values);
-                            values.clear();
-                        }
-                        // update correct count from TestsLog
-                        dataBase.UpdateCorrectCount(testsID,correct_count);
-                        // back to home
-                        backToHome();
+                        SubbmitAns(Date,Time);
                     }else {
-                        toast("finish the answer");
+                        ViewPager.setCurrentItem(selected_ans.indexOf(-1));
+                        Toast.makeText(MainActivity.this, "Please finish all the questions.", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -172,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         //back to home page button
-        final Intent back = new Intent(this,HomeActivity.class);
         back_home_btn.bringToFront();
         back_home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,34 +149,85 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if ((int)pause_resume_btn.getTag() == R.drawable.ic_pause){
-                    if (counting){
-                        timer.stop();
-                        countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
-                        counting = false;
-                        pause_resume_btn.setImageResource(R.drawable.ic_play);
-                        pause_resume_btn.setTag(R.drawable.ic_play);
-                        ViewPager.setVisibility(View.GONE);
-                        //pause screen show
-                    }
+                    pause();
                 }else if ((int)pause_resume_btn.getTag() == R.drawable.ic_play){
-                    if (!counting){
-                        timer.setBase(SystemClock.elapsedRealtime() - countPauseSet);
-                        timer.start();
-                        counting = true;
-                        pause_resume_btn.setImageResource(R.drawable.ic_pause);
-                        pause_resume_btn.setTag(R.drawable.ic_pause);
-                        ViewPager.setVisibility(View.VISIBLE);
-                        //pause screen dismiss
-                    }
+                    resume();
                 }
             }
         });
     }
 
 
-    //for testing
-    public void toast(String msg){
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+    public void pause(){
+        if (counting){
+            timer.stop();
+            countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
+            counting = false;
+            pause_resume_btn.setImageResource(R.drawable.ic_play);
+            pause_resume_btn.setTag(R.drawable.ic_play);
+            ViewPager.setVisibility(View.GONE);
+            //pause screen show
+            pauseScreen.setVisibility(View.VISIBLE);
+        }
+    }
+    public void resume(){
+        if (!counting){
+            timer.setBase(SystemClock.elapsedRealtime() - countPauseSet);
+            timer.start();
+            counting = true;
+            pause_resume_btn.setImageResource(R.drawable.ic_pause);
+            pause_resume_btn.setTag(R.drawable.ic_pause);
+            ViewPager.setVisibility(View.VISIBLE);
+            //pause screen dismiss
+            pauseScreen.setVisibility(View.GONE);
+        }
+    }
+    public void SubbmitAns(String Date,String Time){
+        int correct_count = 0;
+        SQLiteDatabase db = dataBase.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        // stop counting
+        if (counting){
+            timer.stop();
+            countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
+            counting = false;
+        }
+
+        // insert new TestsLog
+        values.put("testDate",Date);
+        values.put("testTime",Time);
+        values.put("duration",(int)Math.floor(countPauseSet/1000));
+        values.put("correctCount",-1);
+        db.insert("TestsLog",null,values);
+        values.clear();
+
+        // get test ID
+        int testsID = dataBase.GetTestsID();
+        // insert for each question
+        for (int i = 0 ; i< questionsList.size() ; i++){
+            values.put("testNo",testsID);
+            values.put("questions",questionsList.get(i).getQuestion());
+            values.put("yourAnswer",selected_ans.get(i));
+            if(Integer.parseInt(questionsList.get(i).getCorrect_ans()) == selected_ans.get(i)){
+                //check answer correct
+                correct_count++;
+                // make the insert value of isCorrect true
+                values.put("isCorrect",1);
+            }
+            else
+                //the wrong answer
+                // make the insert value of isCorrect false
+                values.put("isCorrect",0);
+
+            db.insert("QuestionsLog",null,values);
+
+            values.clear();
+        }
+        // update correct count from TestsLog
+        dataBase.UpdateCorrectCount(testsID,correct_count);
+        // back to home
+        backToHome();
     }
 
     //input ans into array
@@ -238,10 +249,9 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             //show loading screan
-            pd = new ProgressDialog(MainActivity.this);
-            pd.setMessage("loading");
-            pd.setCancelable(false);
-            pd.show();
+            loadingDiaLog = new LoadingDiaLog(MainActivity.this);
+            loadingDiaLog.setCancelable(false);
+            loadingDiaLog.show();
         }
 
         @Override
@@ -337,8 +347,8 @@ public class MainActivity extends AppCompatActivity {
             setupOnboardingactors();
             setcurrentOnboardingiactors(0);
             //loading off
-            if (pd.isShowing()){
-                pd.dismiss();
+            if (loadingDiaLog.isShowing()){
+                loadingDiaLog.dismiss();
                 //create alert dialog
                 showDialog();
             }
@@ -407,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (index == 0){
             btn_prev.setEnabled(false);
-            btn_prev.setText("");
+            btn_prev.setText("First");
         } else {
             btn_prev.setEnabled(true);
             btn_prev.setText("Prev");
