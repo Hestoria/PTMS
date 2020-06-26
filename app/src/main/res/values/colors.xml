@@ -10,6 +10,4 @@
     <color name="comment">#696969</color>
     <color name="correct_bg">#CCFFCC</color>
     <color name="wrong_bg">#FFCCCC</color>
-    <color name="disable">#EDD8D1</color>
-    <color name="item_bg">#e6edd1</color>
 </resources>

@@ -53,7 +53,8 @@
         android:layout_margin="16dp"
         android:textSize="15sp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true"
+        android:visibility="gone"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/ViewPager"

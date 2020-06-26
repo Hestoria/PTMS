@@ -12,6 +12,16 @@
         android:layout_margin="20dp"
         style="@style/title" />
 
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="180dp"
+        android:id="@+id/app_logo"
+        android:src="@drawable/logo"/>
+
     <Button
         android:layout_width="300dp"
         android:layout_height="wrap_content"
@@ -19,6 +29,8 @@
         android:textStyle="bold"
         android:text="Start"
         android:textColor="@drawable/button_text"
-        android:layout_centerInParent="true"
+        android:layout_below="@+id/app_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
         android:onClick="goMain"/>
 </RelativeLayout>

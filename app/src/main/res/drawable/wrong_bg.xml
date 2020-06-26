@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <stroke
+        android:width="3dp"
+        android:color="@color/Kaitoke"
+        android:dashWidth="10dp"
+        />
+    <solid android:color="@color/wrong_bg"/>
+    <corners android:radius="10dp"/>
+</shape>

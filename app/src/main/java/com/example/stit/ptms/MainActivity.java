@@ -417,8 +417,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if (index == 0){
             btn_prev.setEnabled(false);
-            btn_prev.setText("First");
+            btn_prev.setVisibility(View.GONE);
         } else {
+            btn_prev.setVisibility(View.VISIBLE);
             btn_prev.setEnabled(true);
             btn_prev.setText("Prev");
         }
