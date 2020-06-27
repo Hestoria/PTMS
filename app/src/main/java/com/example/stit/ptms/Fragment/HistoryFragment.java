@@ -1,37 +1,29 @@
 package com.example.stit.ptms.Fragment;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.stit.ptms.Adapter.QuestionsLog_Adapter;
 import com.example.stit.ptms.Adapter.TestsLog_Adapter;
 import com.example.stit.ptms.DataBase;
-import com.example.stit.ptms.Object.QuestionsLog;
 import com.example.stit.ptms.Object.TestsLog;
 import com.example.stit.ptms.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class HistoryFragment extends Fragment {
     private RecyclerView.LayoutManager TestsLayoutManager;
@@ -103,7 +95,6 @@ public class HistoryFragment extends Fragment {
             int WrongCount = dataBase.GetWrongCount(),
             CorrectCount = dataBase.GetCorrectCount();
 
-
             // underline
             paint.setColor(Color.BLACK);
             paint.setTextSize(35);
@@ -120,7 +111,16 @@ public class HistoryFragment extends Fragment {
                  tem2 = CorrectCount;
                  tmp = tem1/tem2*370;
 
-            }else{
+            }else if(CorrectCount == WrongCount){
+                front = Color.GREEN;
+                behind = Color.RED;
+                Behind = "Both :"+CorrectCount;
+                Front = "";
+                tem1 = WrongCount;
+                tem2 = CorrectCount;
+                tmp = tem1/tem2*370;
+            }
+            else{
                  behind = Color.GREEN;
                  front = Color.RED;
                  Front = "Wrong :"+WrongCount;
@@ -135,7 +135,6 @@ public class HistoryFragment extends Fragment {
 
             paint.setColor(behind);
             canvas.drawRect(485, 500-tmp, 570, 500, paint);
-
 
             paint.setColor(Color.BLACK);
             canvas.drawLine(180,130,200,130,paint);

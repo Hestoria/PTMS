@@ -37,7 +37,6 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = getSharedPreferences("ptms_1",0);
-        prefs.edit().putBoolean("first",true).commit();
         if (prefs.getBoolean("first",true)) {
             setContentView(R.layout.welcome_page);
             prefs.edit().putBoolean("first",false).commit();

@@ -5,9 +5,7 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -131,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         //back to home page button
         back_home_btn.bringToFront();
         back_home_btn.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    // pause the game
     public void pause(){
         if (counting){
             timer.stop();
@@ -170,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
             pauseScreen.setVisibility(View.VISIBLE);
         }
     }
+    // resume the game
     public void resume(){
         if (!counting){
             timer.setBase(SystemClock.elapsedRealtime() - countPauseSet);
@@ -193,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
             countPauseSet = SystemClock.elapsedRealtime() - timer.getBase();
             counting = false;
         }
-
         // insert new TestsLog
         values.put("testDate",Date);
         values.put("testTime",Time);
@@ -215,13 +212,12 @@ public class MainActivity extends AppCompatActivity {
                 // make the insert value of isCorrect true
                 values.put("isCorrect",1);
             }
-            else
+            else {
                 //the wrong answer
                 // make the insert value of isCorrect false
-                values.put("isCorrect",0);
-
+                values.put("isCorrect", 0);
+            }
             db.insert("QuestionsLog",null,values);
-
             values.clear();
         }
         // update correct count from TestsLog

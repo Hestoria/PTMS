@@ -22,7 +22,6 @@ public class DataBase extends SQLiteOpenHelper {
         super(context, _DBName, null, _DBVersion);
     }
 
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         String SQL = "CREATE TABLE IF NOT EXISTS QuestionsLog(" +
@@ -46,7 +45,7 @@ public class DataBase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        Log.i("Datbase","DB upgraded");
     }
 
     public List<TestsLog> getTestsLog(){
