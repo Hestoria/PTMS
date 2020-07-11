@@ -41,6 +41,15 @@ public class DataBase extends SQLiteOpenHelper {
                 "correctCount INTEGER"+
                 ");";
         db.execSQL(SQL);
+
+        SQL = "CREATE TABLE IF NOT EXISTS User("+
+                "userID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+                "userName varchar(30),"+
+                "userPassword INTEGER,"+
+                "userEmail varchar(50)"+
+                ");";
+
+        db.execSQL(SQL);
     }
 
     @Override
@@ -145,5 +154,17 @@ public class DataBase extends SQLiteOpenHelper {
             return cursor.getInt(0);
         }
         return -1;
+    }
+
+    public void addUser(String email,String name,String password,Byte img){
+
+    }
+
+    public boolean Login(String email,String password){
+        return false;
+    }
+
+    public void reset_password(String username,String email){
+
     }
 }

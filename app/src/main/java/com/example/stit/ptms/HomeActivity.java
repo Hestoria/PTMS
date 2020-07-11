@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import com.example.stit.ptms.Adapter.Welcome_Adapter;
 import com.example.stit.ptms.Fragment.HistoryFragment;
 import com.example.stit.ptms.Fragment.HomeFragment;
+import com.example.stit.ptms.Fragment.LoginFragment;
 import com.example.stit.ptms.Object.Welcome;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -97,6 +98,9 @@ public class HomeActivity extends AppCompatActivity {
                             break;
                         case R.id.nav_history:
                             selectedFragment = new HistoryFragment();
+                            break;
+                        case R.id.nav_login:
+                            selectedFragment = new LoginFragment();
                             break;
                     }
 
