@@ -13,6 +13,7 @@ import com.example.stit.ptms.Object.TestsLog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DataBase extends SQLiteOpenHelper {
     private final static int _DBVersion = 1;
@@ -35,6 +36,7 @@ public class DataBase extends SQLiteOpenHelper {
 
         SQL = "CREATE TABLE IF NOT EXISTS TestsLog(" +
                 "testNo INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+                "userID INTEGER NOT NULL,"+
                 "testDate DATE,"+
                 "testTime TIME," +
                 "duration INTEGER," +
@@ -44,11 +46,10 @@ public class DataBase extends SQLiteOpenHelper {
 
         SQL = "CREATE TABLE IF NOT EXISTS User("+
                 "userID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
-                "userName varchar(30),"+
-                "userPassword INTEGER,"+
-                "userEmail varchar(50)"+
+                "userName varchar(30) UNIQUE,"+
+                "userPassword varchar(15),"+
+                "userEmail varchar(50) UNIQUE"+
                 ");";
-
         db.execSQL(SQL);
     }
 
@@ -57,10 +58,10 @@ public class DataBase extends SQLiteOpenHelper {
         Log.i("Datbase","DB upgraded");
     }
 
-    public List<TestsLog> getTestsLog(){
+    public List<TestsLog> getTestsLog(int id){
         List<TestsLog> data = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM TestsLog";
+        String sql = "SELECT * FROM TestsLog WHERE userID = "+id;
         try(Cursor cursor = db.rawQuery(sql,null)){
             if (cursor.moveToFirst()){
                 do {
@@ -73,30 +74,33 @@ public class DataBase extends SQLiteOpenHelper {
                     ));
                 }while (cursor.moveToNext());
             }
+            return data;
+        }catch (Exception e){
+            Log.e("error",e+"");
+            return data;
         }
-        return data;
-    };
+    }
 
     public List<QuestionsLog> getQuestionsLog(int id){
-      List<QuestionsLog> data = new ArrayList<>();
-      SQLiteDatabase db = this.getReadableDatabase();
-      String sql = "SELECT * FROM QuestionsLog WHERE testNo ="+id;
-        try(Cursor cursor = db.rawQuery(sql,null)){
-          if (cursor.moveToFirst()){
-              do {
-                  QuestionsLog temp = new QuestionsLog();
-                  temp.setAnswer(cursor.getString(cursor.getColumnIndex("yourAnswer")));
-                  temp.setQuestion(cursor.getString(cursor.getColumnIndex("questions")));
-                  if (cursor.getInt(cursor.getColumnIndex("isCorrect"))==1)
-                      temp.setCorrect(true);
-                  else
-                      temp.setCorrect(false);
-                  data.add(temp);
-              }while (cursor.moveToNext());
-          }
-      }
-      return data;
-    };
+        List<QuestionsLog> data = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT * FROM QuestionsLog WHERE testNo ="+id;
+            try(Cursor cursor = db.rawQuery(sql,null)){
+                if (cursor.moveToFirst()){
+                    do {
+                        QuestionsLog temp = new QuestionsLog();
+                        temp.setAnswer(cursor.getString(cursor.getColumnIndex("yourAnswer")));
+                        temp.setQuestion(cursor.getString(cursor.getColumnIndex("questions")));
+                        if (cursor.getInt(cursor.getColumnIndex("isCorrect"))==1)
+                            temp.setCorrect(true);
+                        else
+                            temp.setCorrect(false);
+                        data.add(temp);
+                    }while(cursor.moveToNext());
+                }
+            }
+        return data;
+    }
 
     public int GetTestsID(){
         SQLiteDatabase db = getReadableDatabase();
@@ -156,15 +160,84 @@ public class DataBase extends SQLiteOpenHelper {
         return -1;
     }
 
-    public void addUser(String email,String name,String password,Byte img){
 
+    public boolean addUser(String name,String email,String password){
+        SQLiteDatabase db = getWritableDatabase();
+        try{
+            String sql = "INSERT INTO User (userName,userPassword,userEmail) VALUES('"
+                    +name+"','"+
+                    password+"','"+
+                    email+"');";
+            db.execSQL(sql);
+            return true;
+        }catch (Exception e){
+            Log.e("Error",e+"");
+            return false;
+        }
     }
 
-    public boolean Login(String email,String password){
+    public boolean login_check(String name,String password) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "SELECT userPassword FROM User WHERE userName = '"+name+"'";
+        try{
+            Cursor cursor = db.rawQuery(sql, null);
+            if (cursor != null && cursor.moveToFirst()){
+                if (cursor.getString(cursor.getColumnIndex("userPassword")).equals(password)){
+                    return true;
+                }else
+                    return false;
+            }
+        }catch (Exception e){
+            Log.d("login",e+"");
+        }
         return false;
     }
 
-    public void reset_password(String username,String email){
+    public int getUserID(String name){
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "SELECT userID FROM User WHERE userName = '"+name+"'";
+        try{
+            Cursor cursor = db.rawQuery(sql,null);
+            if (cursor != null && cursor.moveToFirst()){
+                return cursor.getInt(cursor.getColumnIndex("userName"));
+            }else
+                return -1;
+        }catch (Exception e){
+            Log.d("get ID",e+"");
+            return -1;
+        }
+    }
 
+    public String reset_password(String username,String email){
+        SQLiteDatabase db = getWritableDatabase();
+        String pw = "";
+        char[] temp = generatePswd(6);
+        for (int i = 0 ; i<temp.length; i ++ ){
+            pw += temp[i];
+        }
+        String sql = "UPDATE User SET userPassword ='"+pw+
+                "' WHERE userName ='"+username+
+                "' AND userEmail ='"+email+"'";
+        try{
+            db.execSQL(sql);
+            return pw;
+        }catch (Exception e){
+            return "0";
+        }
+    }
+
+    static char[] generatePswd(int len) {
+        String charsCaps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String chars = "abcdefghijklmnopqrstuvwxyz";
+        String nums = "0123456789";
+
+        String passSymbols = charsCaps + chars + nums;
+        Random rnd = new Random();
+
+        char[] password = new char[len];
+        for (int i = 0; i < len; i++) {
+            password[i] = passSymbols.charAt(rnd.nextInt(passSymbols.length()));
+        }
+        return password;
     }
 }

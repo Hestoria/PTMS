@@ -4,4 +4,6 @@
     <string name="title_history">HISTORY</string>
     <string name="click">Click the picture to view detail.</string>
     <string name="start_msg">Are you ready to start?</string>
+    <string name="nodata_msg">No data found</string>
+
 </resources>
