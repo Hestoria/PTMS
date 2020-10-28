@@ -31,19 +31,6 @@
         android:layout_below="@+id/graph"
         style="@style/comment"/>
 
-    <TextView
-        android:id="@+id/Nodata_msg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/nodata_msg"
-        android:layout_centerInParent="true"
-        android:textSize="30dp"
-        android:textColor="@color/Kaitoke"
-        android:textStyle="bold"
-        android:visibility="gone"
-        />
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
@@ -53,5 +40,4 @@
         android:id="@+id/TestsLog_container"
         android:layout_below="@id/click_msg"
         />
-
 </RelativeLayout>

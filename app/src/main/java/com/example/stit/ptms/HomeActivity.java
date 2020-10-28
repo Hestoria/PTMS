@@ -9,16 +9,13 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.stit.ptms.Adapter.Welcome_Adapter;
 import com.example.stit.ptms.Fragment.HistoryFragment;
@@ -36,11 +33,11 @@ public class HomeActivity extends AppCompatActivity {
     private LinearLayout layoutonboarding;
     private List<Welcome> welcomeList = new ArrayList<>();
     private Button welcome_btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = getSharedPreferences("ptms_1",0);
-        //if welcome first time run is true forward to welcome page
         if (prefs.getBoolean("first",true)) {
             setContentView(R.layout.welcome_page);
             prefs.edit().putBoolean("first",false).commit();
@@ -80,20 +77,13 @@ public class HomeActivity extends AppCompatActivity {
             setcurrentOnboardingiactors(0);
 
         }else {
-            // not first time running go home
             setContentView(R.layout.activity_home);
-            // home page setup
+            //set up home page
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
             bottomNavigationView.bringToFront();
             bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
 
-            if(prefs.getString("userName","").matches("")){
-                // not login go login
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new LoginFragment()).commit();
-            }else {
-                // login go home page
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
-            }
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
         }
     }
 
@@ -162,5 +152,9 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             welcome_btn.setText("Next");
         }
+    }
+
+    public void goMain(View view){
+        startActivity(new Intent(this,MainActivity.class));
     }
 }

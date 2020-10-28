@@ -1,18 +1,15 @@
 package com.example.stit.ptms.Fragment;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,9 +33,6 @@ public class HistoryFragment extends Fragment {
     private DataBase dataBase;
     private LinearLayout graph;
     private Chart chart;
-    private SharedPreferences prefs =null;
-    private int getdata = 0;
-    private TextView Nodata_msg;
     View v;
 
     @Nullable
@@ -47,8 +41,6 @@ public class HistoryFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_history,container,false);
         TestsRecyclerView = v.findViewById(R.id.TestsLog_container);
         graph = v.findViewById(R.id.graph);
-        Nodata_msg = v.findViewById(R.id.Nodata_msg);
-
 
         TestsLayoutManager = new LinearLayoutManager(getActivity());
         testsLogAdapter = new TestsLog_Adapter(getContext(),data);
@@ -56,14 +48,9 @@ public class HistoryFragment extends Fragment {
         TestsRecyclerView.setAdapter(testsLogAdapter);
 
         // draw chart
-        if(getdata==0){
-            graph.setVisibility(View.GONE);
-            Nodata_msg.setVisibility(View.VISIBLE);
-        }else {
-            Nodata_msg.setVisibility(View.GONE);
-            chart = new Chart(this.getContext());
-            graph.addView(chart);
-        }
+        chart = new Chart(this.getContext());
+        graph.addView(chart);
+
         testsLogAdapter.setOnItemClickListener(new TestsLog_Adapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
@@ -85,20 +72,12 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        prefs = getActivity().getSharedPreferences("ptms_1",0);
         setvalue();
     }
 
     public void setvalue(){
         dataBase = new DataBase(getContext());
-        if (dataBase.getUserID(prefs.getString("userName","")) != -1){
-            data = dataBase.getTestsLog(dataBase.getUserID(prefs.getString("userName","")));
-            getdata = 1;
-        }
-        else{
-            getdata = 0;
-            Log.d("data","nodata");
-        }
+        data = dataBase.getTestsLog();
     }
 
     class Chart extends View {

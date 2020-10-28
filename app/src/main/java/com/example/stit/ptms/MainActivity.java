@@ -7,7 +7,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -59,14 +58,11 @@ public class MainActivity extends AppCompatActivity {
     private LoadingDiaLog loadingDiaLog;
     private ViewPager2 ViewPager;
     private RelativeLayout pauseScreen;
-    private SharedPreferences prefs =null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        prefs = getSharedPreferences("ptms_1",0);
         timer = findViewById(R.id.timer);
         layoutonboarding = findViewById(R.id.onboarding);
         btn_next = findViewById(R.id.questions_next);
@@ -197,7 +193,6 @@ public class MainActivity extends AppCompatActivity {
         }
         // insert new TestsLog
         values.put("testDate",Date);
-        values.put("UserID",dataBase.getUserID(prefs.getString("userName","")));
         values.put("testTime",Time);
         values.put("duration",(int)Math.floor(countPauseSet/1000));
         values.put("correctCount",-1);

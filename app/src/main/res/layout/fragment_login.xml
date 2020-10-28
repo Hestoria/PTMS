@@ -25,7 +25,6 @@
 
     <EditText
         android:textColorHint="@color/Kaitoke"
-        android:textColor="@color/Kaitoke"
         android:id="@+id/user_login_username"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
@@ -40,7 +39,6 @@
         />
     <EditText
         android:textColorHint="@color/Kaitoke"
-        android:textColor="@color/Kaitoke"
         android:id="@+id/user_login_password"
         android:layout_width="250dp"
         android:background="@null"
@@ -80,7 +78,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/btn_reg"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register here"
@@ -93,14 +91,14 @@
 
     <TextView
         android:textColor="@color/Kaitoke"
-        android:id="@+id/btn_reestPW"
+        android:id="@+id/forget_pw"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Forget Password"
         android:layout_below="@+id/btn_login"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="80dp"
-        android:layout_alignParentRight="true"
-        />
+        android:onClick="forget_pw"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>
